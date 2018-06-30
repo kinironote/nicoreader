@@ -1,0 +1,2 @@
+# nicoreader
+reader for nicovideo
