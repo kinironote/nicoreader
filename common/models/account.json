@@ -8,12 +8,19 @@
   "properties": {},
   "validations": [],
   "relations": {
-    "feeds": {
-      "type": "hasAndBelongsToMany",
+    "ownFeeds": {
+      "type": "hasMany",
       "model": "Feed",
-      "thoroughTable": "AccountFeed"
+      "foreignKey": "ownerId"
     }
   },
-  "acls": [],
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
   "methods": {}
 }
