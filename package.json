@@ -22,6 +22,7 @@
     "loopback-component-explorer": "^2.4.0",
     "loopback-connector-postgresql": "^3.3.2",
     "loopback-datasource-juggler": "^2.39.0",
+    "react-toolbox": "^2.0.0-beta.13",
     "request": "^2.87.0",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^2.0.0"
