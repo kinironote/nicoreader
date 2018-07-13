@@ -42,28 +42,29 @@ module.exports = function(Feed) {
         feedparser.on('readable', function() {
           var item;
           while ((item = this.read())) {
-            const date = libxml.parseHtmlString(item.description).get('//*[@class="nico-info-date"]').text();
+            const discription = item.description;
             const response = {
               title: item.title,
-              thumbnailUrl: item['media:thumbnail']['@'].url,
+              thumbnailUrl: discription.match(/src=\"(.*?)\"/)[1],
               viewCounter: '',
               contentId: item.link.replace('http://www.nicovideo.jp/watch/sm', ''),
-              startTime: date,
+              startTime: discription.match(/<strong class=\"nico-info-date\">(.*?)<\/strong>/)[1],
             };
             items.push(response);
           }
         });
 
         feedparser.on('end', function() {
-          res(null, items[0]);
+          res(null, JSON.stringify(items));
         });
       } else if (instance.feedType === 'search' || instance.feedType === 'tags') {
         var apiCall = function() {
           var query = instance.query;
+          console.log('get');
           switch (instance.feedType) {
             case 'search':
               return 'https://api.search.nicovideo.jp/api/v2/video/contents/search' +
-                    '?q=' + encodeURIComponent(instance.query) +
+                    '?q=' + encodeURIComponent(query) +
                     '&targets=title' +
                     '&fields=title,thumbnailUrl,viewCounter,contentId,startTime' +
                     '&_sort=-startTime' +
@@ -73,13 +74,13 @@ module.exports = function(Feed) {
               break;
             case 'tags':
               return 'https://api.search.nicovideo.jp/api/v2/video/contents/search' +
-                  '?q=' + encodeURIComponent(instance.query) +
-                  '&targets=tags' +
-                  '&fields=title,thumnailUrl,viewCounter,contentId,startTime' +
-                  '&_sort=-startTime' +
-                  '&_offset=0' +
-                  '&_limit=20' +
-                  '&_context=nicoreader';
+                    '?q=' + encodeURIComponent(query) +
+                    '&targets=tags' +
+                    '&fields=title,thumbnailUrl,viewCounter,contentId,startTime' +
+                    '&_sort=-startTime' +
+                    '&_offset=0' +
+                    '&_limit=20' +
+                    '&_context=nicoreader';
               break;
             default:
               break;

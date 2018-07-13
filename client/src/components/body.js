@@ -1,15 +1,30 @@
 import React, { Component } from 'react';
 import TimeLine from './timeline.js'
+import Button from '@material-ui/core/Button';
 
 export default class Body extends Component {
   render() {
     return (
       <div style={styles.body}>
-          {[0,1,2,3,4,5,6,7,8,9].map((i)=>(
-            <div style={styles.timeline}>
-                <TimeLine style={styles.timeline}/>
+        {console.log(this.props.feeds)}
+          {this.props.feeds.map((feed, i)=>(
+            <div style={styles.timeline} key={i}>
+              <TimeLine
+                key={i}
+                style={styles.timeline}
+                feed = {feed}
+                updateFeed = {this.props.updateFeed}
+                deleteFeed = {this.props.deleteFeed}
+              />
             </div>
           ))}
+          {this.props.loggedIn &&
+            <div style={styles.timeline}>
+              <span>
+                <Button style={styles.addButton} onClick={()=>this.props.addNewFeed()}> + </Button>
+              </span>
+            </div>
+          }
       </div>
     )
   }
@@ -28,5 +43,11 @@ const styles = {
       paddingTop: 12,
       paddingLeft: 9,
       paddingRight: 9,
+  },
+  addButton:{
+    backgroundColor: '#292929',
+    height: '100%',
+    width: 260,
+    fontSize: '50px',
   }
 }
