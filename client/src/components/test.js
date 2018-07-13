@@ -253,7 +253,7 @@ const styles = {
     height: 40,
     color: '#CECECE',
     fontFamily: ['PT Sans', 'sans-serif'],
-    '-webkit-font-smoothing': 'antialiased',
+    'WebkitFontSmoothing': 'antialiased',
     position: 'relative',
   },
   titleWrapper:{

@@ -26,7 +26,7 @@ class App extends Component {
       this.setState({token: response.data.id, userid: response.data.userId, username: username})
       this.props.cookies.set('token', this.state.token);
       this.props.cookies.set('userid', this.state.userid);
-      this.fetchContents();
+      this.fetchAllContents();
       return {status:'success'}
     }catch(error){
       return {status:'error', message:'ユーザー名またはパスワードが違います'}
@@ -54,7 +54,7 @@ class App extends Component {
       this.setState({token: response.data.id, userid: response.data.userId, username: username})
       this.props.cookies.set('token', this.state.token);
       this.props.cookies.set('userid', this.state.userid);
-      this.fetchContents();
+      this.fetchAllContents();
       return {status:'success'}
     }catch(error){
       return {status:'error', message:'ユーザー名またはパスワードが違います'}
@@ -65,15 +65,49 @@ class App extends Component {
     this.props.cookies.set('token', null);
     this.props.cookies.set('userid', null);
   }
-  fetchContents = async () => {
+  updateFeedState = (feed) => {
+    const index = this.state.feeds.findIndex((e)=>e.timelineId === feed.timelineId);
+    if(index === -1){
+      this.setState({feeds: [...this.state.feeds, feed]})
+    }else{
+      var newFeeds = this.state.feeds;
+      newFeeds[index] = feed;
+      this.setState({feeds: newFeeds})
+    }
+  }
+  deleteFeedState = (feed) => {
+    const index = this.state.feeds.findIndex((e)=>e.timelineId === feed.timelineId);
+    if(index === -1){
+    }else{
+      var newFeeds = this.state.feeds;
+      newFeeds.splice(index, 1);
+      this.setState({feeds: newFeeds})
+    }
+  }
+  fetchContents = async (feed) => {
     console.log("fetch contents");
+    console.log(feed);
+    const raw_contents = await axios.get(this.apiURL+'/Feeds/'+feed.id+'/request-feed', {});
+    const contents = JSON.parse(raw_contents.data.response);
+    if (feed.feedType === 'user' || feed.feedType === 'mylist') {
+      feed['contents'] = {data:contents,meta:{}};
+    } else if (feed.feedType === 'search' || feed.feedType === 'tags') {
+      feed['contents'] = contents;
+    }else{
+    }
+    console.log(feed)
+    this.updateFeedState(feed);
+  }
+  fetchAllContents = async () => {
+    console.log("fetch all contents");
     this.setState({feeds:[]})
     const raw_feed_list = await axios.get(this.apiURL+'/Feeds', {
       params: {
         filter: {
           where: {
             ownerId: this.state.userid
-          }
+          },
+          order: 'timelineId ASC'
         }
       }
     });
@@ -117,7 +151,7 @@ class App extends Component {
       console.log(response);
     }else{
     }
-    this.fetchContents();
+    this.deleteFeedState(feed);
   }
   updateFeed = async (feed) => {
     console.log(feed);
@@ -132,6 +166,8 @@ class App extends Component {
         query: feed.query
       })
       console.log(response);
+      const newFeed = response.data;
+      this.fetchContents(newFeed);
     }else{
       // create
       console.log("create feed");
@@ -139,18 +175,27 @@ class App extends Component {
       const response = await axios.post(this.apiURL+'/Feeds',{
         feedName: feed.feedName,
         feedType: feed.feedType,
-        query: feed.query
+        query: feed.query,
+        timelineId: feed.timelineId
       })
       console.log(response);
+      const newFeed = response.data;
+      this.fetchContents(newFeed);
     }
-    this.fetchContents();
   }
   addNewFeed = ()=>{
-    this.setState({feeds:[...this.state.feeds, {}]});
+    console.log(this.state.feeds);
+    const feed = {
+      feedName: "",
+      feedType: "search",
+      query: "",
+      timelineId: this.state.feeds.length === 0 ? 0 : this.state.feeds[this.state.feeds.length - 1].timelineId + 1
+    };
+    this.updateFeed(feed);
   }
   componentWillMount(){
     axios.defaults.headers.common['Authorization'] = this.state.token;
-    this.fetchContents();
+    this.fetchAllContents();
   }
   render() {
     return (

@@ -27,14 +27,39 @@ export default class TimeLine extends Component {
     super(props);
     this.state = {
       feed: this.props.feed,
-      openSetting: ('contents' in this.props.feed) ? false : true,
+      openSetting: ('data' in this.props.feed.contents) ? false : true,
+      now: new Date()
     }
-    this.state.feed.feedType = this.state.feed.feedType ? this.state.feed.feedType : "search";
   }
 
   handleChange = (name, value) => {
     this.setState({...this.state, [name]: value});
   };
+
+  calcDateDiff = (date) => {
+    console.log("calc")
+    console.log(this.state.now)
+    console.log(date)
+    console.log(date.toISOString())
+
+    var SECOND_MILLISECOND = 1000,
+    MINUTE_MILLISECOND = 60 * SECOND_MILLISECOND,
+    HOUR_MILLISECOND = 60 * MINUTE_MILLISECOND,
+    DAY_MILLISECOND = 24 * HOUR_MILLISECOND,
+    WEEK_MILLISECOND = 7 * DAY_MILLISECOND,
+    YEAR_MILLISECOND = 365 * DAY_MILLISECOND;
+
+    var options = {
+      weekday: "narrow", year: "numeric", month: "short",
+      day: "numeric", hour: "2-digit", minute: "2-digit"
+    };
+
+    var diff = this.state.now.getTime() - date.getTime();
+    if(diff < MINUTE_MILLISECOND) return Math.floor(diff / SECOND_MILLISECOND) + "秒前"
+    else if(diff < HOUR_MILLISECOND) return Math.floor(diff / MINUTE_MILLISECOND) + "分前"
+    else if(diff < DAY_MILLISECOND) return Math.floor(diff / HOUR_MILLISECOND) + "時間前"
+    else return date.toLocaleTimeString("ja-JP", options);
+  }
 
   render() {
     return (
@@ -49,8 +74,6 @@ export default class TimeLine extends Component {
                   <div style={styles.fieldWrapper}>
                   <TextField
                     label="タイトル"
-                    defaultValue=""
-                    className={styles.textField}
                     helperText=""
                     value={this.state.feed.feedName}
                     onChange={(e)=>this.setState({feed:{...this.state.feed, feedName: e.target.value}})}
@@ -60,7 +83,6 @@ export default class TimeLine extends Component {
                     id="select-currency"
                     select
                     label="検索タイプ"
-                    className={styles.textField}
                     value={this.state.feed.feedType ? this.state.feed.feedType : "search"}
                     onChange={(e)=>this.setState({feed:{...this.state.feed, feedType: e.target.value}})}
                     helperText=""
@@ -73,12 +95,7 @@ export default class TimeLine extends Component {
                   </TextField>
                   </div><div style={styles.fieldWrapper}>
                   <TextField
-                    id="multiline-static"
-                    multiline
-                    rows="3"
                     label="検索文字列"
-                    defaultValue=""
-                    className={styles.textField}
                     helperText=""
                     value={this.state.feed.query}
                     onChange={(e)=>this.setState({feed:{...this.state.feed, query: e.target.value}})}
@@ -89,15 +106,16 @@ export default class TimeLine extends Component {
                 </div>
               }
           </div>
-          {('contents' in this.props.feed) &&
+          {('contents' in this.props.feed) && ('data' in this.props.feed.contents) &&
             <div style={this.state.openSetting ? styles.contentListWhenOpenSetting : styles.contentList}>
-              {this.props.feed.contents.data.map((c)=>(
-                <div style={styles.content}>
+              {this.props.feed.contents.data.map((c, i)=>(
+                <div style={styles.content} key={i}>
                     <a href={'http://www.nicovideo.jp/watch/'+c.contentId} target='_blank' style={{textDecoration: 'none'}}>
                       <img style={styles.thumbnail} src={c.thumbnailUrl} alt="サムネイル"/>
                       <span style={styles.contentTitle}>{c.title}</span>
                     </a>
                     <span style={styles.viewCount}>{c.viewCounter}</span>
+                    <span style={styles.date}>{this.calcDateDiff(new Date(c.startTime.replace(/[年月日]/g,"/").replace(/：/g,":")))}</span>
                 </div>
               ))}
             </div>
@@ -156,11 +174,11 @@ const styles = {
     padding: 10,
   },
   contentList:{
-    'overflow-x': 'auto',
+    'overflowX': 'auto',
     height: 'calc(100% - 35px)',
   },
   contentListWhenOpenSetting:{
-    'overflow-x': 'auto',
+    'overflowX': 'auto',
     height: 'calc(100% - 353px)',
   },
   content:{
@@ -173,6 +191,7 @@ const styles = {
     paddingRight: 15,
     paddingTop: 20,
     position: 'relative',
+    overflow: 'hidden'
   },
   thumbnail:{
     width: 230,
@@ -186,13 +205,26 @@ const styles = {
     fontSize: 13,
     color: '#d5d5d5DA',
     fontFamily: 'Helvetica',
+    textShadow: '1px 1px 0 #000'
+  },
+  date:{
+    position: 'absolute',
+    top: 127,
+    left: 16,
+    fontSize: 13,
+    color: '#d5d5d5DA',
+    fontFamily: 'Helvetica',
+    textShadow: '1px 1px 0 #000'
   },
   contentTitle:{
     position: 'relative',
     color: '#DEDEDE',
-    top: -4,
+    top: -3,
     display: 'block',
     lineHeight: '18px',
-    fontSize: 13
+    fontSize: 13,
+    display: '-webkit-box',
+    '-webkit-box-orient': 'vertical',
+    '-webkit-line-clamp': '2'
   }
 }

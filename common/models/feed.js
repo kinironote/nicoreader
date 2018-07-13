@@ -47,7 +47,7 @@ module.exports = function(Feed) {
               title: item.title,
               thumbnailUrl: discription.match(/src=\"(.*?)\"/)[1],
               viewCounter: '',
-              contentId: item.link.replace('http://www.nicovideo.jp/watch/sm', ''),
+              contentId: item.link.replace('http://www.nicovideo.jp/watch/', ''),
               startTime: discription.match(/<strong class=\"nico-info-date\">(.*?)<\/strong>/)[1],
             };
             items.push(response);

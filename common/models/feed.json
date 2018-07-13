@@ -7,9 +7,7 @@
   },
   "properties": {
     "feedName": {
-      "type": "string",
-      "required": true,
-      "default": "Feed"
+      "type": "string"
     },
     "feedType": {
       "type": "string",
@@ -23,6 +21,9 @@
     },
     "query": {
       "type": "string"
+    },
+    "timelineId": {
+      "type": "Number"
     }
   },
   "validations": [],

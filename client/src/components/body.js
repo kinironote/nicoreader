@@ -8,9 +8,9 @@ export default class Body extends Component {
       <div style={styles.body}>
         {console.log(this.props.feeds)}
           {this.props.feeds.map((feed, i)=>(
-            <div style={styles.timeline} key={i}>
+            <div style={styles.timeline} key={feed.timelineId}>
               <TimeLine
-                key={i}
+                timelineId={i}
                 style={styles.timeline}
                 feed = {feed}
                 updateFeed = {this.props.updateFeed}
@@ -35,7 +35,7 @@ const styles = {
       backgroundColor: '#1A1A1A',
       height: 'calc(100% - 40px)',
       minWidth: '100%',
-      'overflow-x': 'auto',
+      'overflowX': 'auto',
       'display': 'flex',
   },
   timeline:{
