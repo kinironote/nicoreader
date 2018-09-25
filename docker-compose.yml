@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   db:
@@ -8,16 +8,26 @@ services:
       POSTGRES_PASSWORD: ""
     volumes:
       - ./db:/var/lib/postgresql/data
-  web:
-    build: ./
+  client:
+    image: "node:9"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./client/:/home/node/app
+    ports:
+      - "80:3000"
+    command: bash -c "yarn && yarn start"
+  server:
+    build: ./server/
     user: "node"
     working_dir: /home/node/app
     environment:
       - NODE_ENV=production
     volumes:
-      - ./:/home/node/app
+      - ./server/:/home/node/app
     ports:
       - "3000:3000"
-    command: "nodemon ./ --config ./nodeamon.json"
+    command: bash -c "yarn && nodemon ./ --config ./nodeamon.json"
     depends_on:
       - db
