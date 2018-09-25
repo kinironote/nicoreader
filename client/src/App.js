@@ -7,7 +7,7 @@ import { withCookies } from 'react-cookie';
 class App extends Component {
   constructor(props){
     super(props);
-    this.apiURL = 'http://localhost:3000/api'
+    this.apiURL = 'http://'+(window.location.hostname)+':3000/api'
     this.state = {
       username: '',
       token: this.props.cookies.get('token') || '',
