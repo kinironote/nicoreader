@@ -35,7 +35,7 @@ const styles = {
       backgroundColor: '#1A1A1A',
       height: 'calc(100% - 40px)',
       minWidth: '100%',
-      'overflow-x': 'auto',
+      'overflowX': 'auto',
       'display': 'flex',
   },
   timeline:{

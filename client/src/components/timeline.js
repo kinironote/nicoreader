@@ -91,8 +91,8 @@ export default class TimeLine extends Component {
           </div>
           {('contents' in this.props.feed) &&
             <div style={this.state.openSetting ? styles.contentListWhenOpenSetting : styles.contentList}>
-              {this.props.feed.contents.data.map((c)=>(
-                <div style={styles.content}>
+              {this.props.feed.contents.data.map((c, i)=>(
+                <div style={styles.content} key={i}>
                     <a href={'http://www.nicovideo.jp/watch/'+c.contentId} target='_blank' style={{textDecoration: 'none'}}>
                       <img style={styles.thumbnail} src={c.thumbnailUrl} alt="サムネイル"/>
                       <span style={styles.contentTitle}>{c.title}</span>
@@ -156,11 +156,11 @@ const styles = {
     padding: 10,
   },
   contentList:{
-    'overflow-x': 'auto',
+    'overflowX': 'auto',
     height: 'calc(100% - 35px)',
   },
   contentListWhenOpenSetting:{
-    'overflow-x': 'auto',
+    'overflowX': 'auto',
     height: 'calc(100% - 353px)',
   },
   content:{
