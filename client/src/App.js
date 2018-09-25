@@ -9,13 +9,17 @@ class App extends Component {
     super(props);
     this.apiURL = 'http://'+(window.location.hostname)+':3000/api'
     this.state = {
-      username: '',
-      token: this.props.cookies.get('token') || '',
-      userid: this.props.cookies.get('userid') || '',
-      feeds: []
+      username: null,
+      token: this.props.cookies.get('token') || null,
+      userid: this.props.cookies.get('userid') || null,
+      feeds: [],
+      isGuest: this.props.cookies.get('isGuest') === '1'
     }
   }
   signin = async (username, password) => {
+    console.log("signin");
+    this.setState({isGuest: false});
+    this.props.cookies.remove('isGuest');
     try {
       const response = await axios.post(this.apiURL+'/Accounts/login', {
         username: username,
@@ -33,8 +37,9 @@ class App extends Component {
     }
   }
   signup = async (username, password, email) => {
+    console.log("signup")
     try {
-      const response = await axios.post(this.apiURL+'/Accounts', {
+      const response = await axios.put(this.apiURL+'/Accounts/'+this.state.userid, {
         username: username,
         email: email,
         password: password
@@ -43,6 +48,8 @@ class App extends Component {
     }catch(error){
       return {status:'error', message:'そのユーザー名またはメールアドレスはすでに登録されています'}
     }
+    this.setState({isGuest: false});
+    this.props.cookies.remove('isGuest');
     // Todo: メールアドレス認証
     try {
       const response = await axios.post(this.apiURL+'/Accounts/login', {
@@ -60,10 +67,42 @@ class App extends Component {
       return {status:'error', message:'ユーザー名またはパスワードが違います'}
     }
   }
+  guestLogin = async () => {
+    var username = null;
+    var password = null;
+    try {
+      const response = await axios.get(this.apiURL+'/Accounts/spawn-guest')
+      console.log(response);
+      username = response.data.response.username;
+      password = response.data.response.password;
+    }catch(error){
+      return {status:'error', message:'unknown error occured.'}
+    }
+    console.log("set isGuest");
+    this.props.cookies.set('isGuest', '1');
+    this.setState({isGuest: true});
+    try {
+      const response = await axios.post(this.apiURL+'/Accounts/login', {
+        username: username,
+        password: password
+      })
+      console.log(response)
+      axios.defaults.headers.common['Authorization'] = response.data.id;
+      this.setState({token: response.data.id, userid: response.data.userId, username: username})
+      this.props.cookies.set('token', this.state.token);
+      this.props.cookies.set('userid', this.state.userid);
+      this.fetchContents();
+      return {status:'success'}
+    }catch(error){
+      return {status:'error', message:'ユーザー名またはパスワードが違います'}
+    }
+  }
   logout = async () => {
-    this.setState({username: '', password: '', token: '',feeds: []})
-    this.props.cookies.set('token', null);
-    this.props.cookies.set('userid', null);
+    this.setState({username: null, password: null, token: null, userid: null, feeds: []})
+    this.props.cookies.remove('token');
+    this.props.cookies.remove('userid');
+    delete axios.defaults.headers.common['Authorization'];
+    await this.guestLogin();
   }
   fetchContents = async () => {
     console.log("fetch contents");
@@ -148,11 +187,16 @@ class App extends Component {
   addNewFeed = ()=>{
     this.setState({feeds:[...this.state.feeds, {}]});
   }
-  componentWillMount(){
+  async componentWillMount(){
     axios.defaults.headers.common['Authorization'] = this.state.token;
+    if(this.state.token == null){
+      await this.guestLogin();
+    }
     this.fetchContents();
   }
   render() {
+    console.log(this.props.cookies.cookies);
+    console.log(this.state);
     return (
       <div className="App">
         <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet"></link>
@@ -160,10 +204,10 @@ class App extends Component {
           signin = {this.signin}
           signup = {this.signup}
           logout = {this.logout}
-          loggedIn = {this.state.token != null}
+          loggedIn = {this.state.token !== null && this.state.isGuest === false}
         />
         <Body
-          loggedIn = {this.state.token !== ''}
+          loggedIn = {this.state.token !== null}
           feeds = {this.state.feeds}
           updateFeed = {this.updateFeed}
           addNewFeed = {this.addNewFeed}

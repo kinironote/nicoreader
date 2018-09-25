@@ -45,7 +45,7 @@ export default class TimeLine extends Component {
                 <span style={styles.settingIcon} onClick={()=>this.setState({openSetting: !this.state.openSetting})}>>></span>
               </div>
               {this.state.openSetting &&
-                <div style={styles.timelineHeaderSettings}>
+                <form style={styles.timelineHeaderSettings} onSubmit={()=>this.props.updateFeed(this.state.feed)}>
                   <div style={styles.fieldWrapper}>
                   <TextField
                     label="タイトル"
@@ -73,9 +73,6 @@ export default class TimeLine extends Component {
                   </TextField>
                   </div><div style={styles.fieldWrapper}>
                   <TextField
-                    id="multiline-static"
-                    multiline
-                    rows="3"
                     label="検索文字列"
                     defaultValue=""
                     className={styles.textField}
@@ -84,9 +81,9 @@ export default class TimeLine extends Component {
                     onChange={(e)=>this.setState({feed:{...this.state.feed, query: e.target.value}})}
                   />
                   </div>
-                  <Button variant="contained" style={{marginRight: 5}} color="primary" onClick={()=>this.props.updateFeed(this.state.feed)}>更新</Button>
+                  <Button variant="contained" style={{marginRight: 5}} color="primary" type="submit">更新</Button>
                   <Button variant="contained" onClick={()=>this.props.deleteFeed(this.state.feed)}>削除</Button>
-                </div>
+                </form>
               }
           </div>
           {('contents' in this.props.feed) &&
