@@ -45,17 +45,20 @@ export default class TimeLine extends Component {
                 <span style={styles.settingIcon} onClick={()=>this.setState({openSetting: !this.state.openSetting})}>>></span>
               </div>
               {this.state.openSetting &&
-                <form style={styles.timelineHeaderSettings} onSubmit={()=>this.props.updateFeed(this.state.feed)}>
+                <form style={styles.timelineHeaderSettings} onSubmit={async () => {await this.setState({feed:{...this.state.feed, feedName: this.state.feed.feedName || this.state.feed.query}}); this.props.updateFeed(this.state.feed)}}>
+                  {this.state.feed.feedName != null &&
+                    <div style={styles.fieldWrapper}>
+                    <TextField
+                      label="タイトル"
+                      defaultValue=""
+                      className={styles.textField}
+                      helperText=""
+                      value={this.state.feed.feedName}
+                      onChange={(e)=>this.setState({feed:{...this.state.feed, feedName: e.target.value}})}
+                    />
+                    </div>
+                  }
                   <div style={styles.fieldWrapper}>
-                  <TextField
-                    label="タイトル"
-                    defaultValue=""
-                    className={styles.textField}
-                    helperText=""
-                    value={this.state.feed.feedName}
-                    onChange={(e)=>this.setState({feed:{...this.state.feed, feedName: e.target.value}})}
-                  />
-                  </div><div style={styles.fieldWrapper}>
                   <TextField
                     id="select-currency"
                     select
@@ -71,7 +74,8 @@ export default class TimeLine extends Component {
                       </MenuItem>
                     ))}
                   </TextField>
-                  </div><div style={styles.fieldWrapper}>
+                  </div>
+                  <div style={styles.fieldWrapper}>
                   <TextField
                     label="検索文字列"
                     defaultValue=""
