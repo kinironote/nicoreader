@@ -72,15 +72,20 @@ export default class TimeLine extends Component {
                 <span style={styles.settingIcon} onClick={()=>this.setState({openSetting: !this.state.openSetting})}>>></span>
               </div>
               {this.state.openSetting &&
-                <div style={styles.timelineHeaderSettings}>
+                <form style={styles.timelineHeaderSettings} onSubmit={async () => {await this.setState({feed:{...this.state.feed, feedName: this.state.feed.feedName || this.state.feed.query}}); this.props.updateFeed(this.state.feed)}}>
+                  {this.state.feed.feedName != null &&
+                    <div style={styles.fieldWrapper}>
+                    <TextField
+                      label="タイトル"
+                      defaultValue=""
+                      className={styles.textField}
+                      helperText=""
+                      value={this.state.feed.feedName}
+                      onChange={(e)=>this.setState({feed:{...this.state.feed, feedName: e.target.value}})}
+                    />
+                    </div>
+                  }
                   <div style={styles.fieldWrapper}>
-                  <TextField
-                    label="タイトル"
-                    helperText=""
-                    value={this.state.feed.feedName}
-                    onChange={(e)=>this.setState({feed:{...this.state.feed, feedName: e.target.value}})}
-                  />
-                  </div><div style={styles.fieldWrapper}>
                   <TextField
                     id="select-currency"
                     select
@@ -95,18 +100,21 @@ export default class TimeLine extends Component {
                       </MenuItem>
                     ))}
                   </TextField>
-                  </div><div style={styles.fieldWrapper}>
+                  </div>
+                  <div style={styles.fieldWrapper}>
                   <TextField
                     label="クエリ"
                     placeholder={helpEachType[this.state.feed.feedType]}
+                    defaultValue=""
+                    className={styles.textField}
                     helperText=""
                     value={this.state.feed.query}
                     onChange={(e)=>this.setState({feed:{...this.state.feed, query: e.target.value}})}
                   />
                   </div>
-                  <Button variant="contained" style={{marginRight: 5}} color="primary" onClick={()=>this.props.updateFeed(this.state.feed)}>更新</Button>
+                  <Button variant="contained" style={{marginRight: 5}} color="primary" type="submit">更新</Button>
                   <Button variant="contained" onClick={()=>this.props.deleteFeed(this.state.feed)}>削除</Button>
-                </div>
+                </form>
               }
           </div>
           {('contents' in this.props.feed) && ('data' in this.props.feed.contents) &&

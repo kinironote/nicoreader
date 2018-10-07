@@ -70,7 +70,7 @@ export default class Header extends Component {
               {this.state.popupMessage != null &&
                 <span style={{color: 'red', fontSize: 10}}>{this.state.popupMessage}</span>
               }
-              <div>
+              <form onSubmit={(e)=>{this.signin(); e.preventDefault();}}>
                 <TextField
                   type='text'
                   label="ユーザー名"
@@ -86,9 +86,9 @@ export default class Header extends Component {
                   onChange={(e)=>this.setState({password:e.target.value})}
                 />
                 <br />
-                <Button onClick={this.signin}>ログイン</Button>
+                <Button type="submit">ログイン</Button>
                 <Button onClick={()=>this.setState({popupSignin: false})}>閉じる</Button>
-              </div>
+              </form>
             </div>
           </div>
         }
@@ -99,7 +99,7 @@ export default class Header extends Component {
               {this.state.popupMessage != null &&
                 <span style={{color: 'red', fontSize: 10}}>{this.state.popupMessage}</span>
               }
-              <div>
+              <form onSubmit={(e)=>{this.signup(); e.preventDefault();}}>
                 <TextField
                   type='text'
                   label="ユーザー名"
@@ -124,9 +124,9 @@ export default class Header extends Component {
                 />
                 <br />
                 <br />
-                <Button onClick={this.signup}>登録</Button>
+                <Button type="submit">登録</Button>
                 <Button onClick={()=>this.setState({popupSignup: false})}>閉じる</Button>
-              </div>
+              </form>
             </div>
           </div>
         }
