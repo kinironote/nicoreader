@@ -187,7 +187,7 @@ class App extends Component {
     console.log(this.state.feeds);
     const feed = {
       feedName: "",
-      feedType: "search",
+      feedType: "tags",
       query: "",
       timelineId: this.state.feeds.length === 0 ? 0 : this.state.feeds[this.state.feeds.length - 1].timelineId + 1
     };

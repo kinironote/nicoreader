@@ -22,6 +22,13 @@ const currencies = [
   }
 ];
 
+const helpEachType = {
+  search: "例：少年 or 少女",
+  tags: "例：ゲーム or VOCAROID",
+  mylist: "マイリストのID",
+  user: "ユーザーのID"
+}
+
 export default class TimeLine extends Component {
   constructor(props){
     super(props);
@@ -37,24 +44,19 @@ export default class TimeLine extends Component {
   };
 
   calcDateDiff = (date) => {
-    console.log("calc")
-    console.log(this.state.now)
-    console.log(date)
-    console.log(date.toISOString())
-
-    var SECOND_MILLISECOND = 1000,
+    const SECOND_MILLISECOND = 1000,
     MINUTE_MILLISECOND = 60 * SECOND_MILLISECOND,
     HOUR_MILLISECOND = 60 * MINUTE_MILLISECOND,
     DAY_MILLISECOND = 24 * HOUR_MILLISECOND,
     WEEK_MILLISECOND = 7 * DAY_MILLISECOND,
     YEAR_MILLISECOND = 365 * DAY_MILLISECOND;
 
-    var options = {
+    const options = {
       weekday: "narrow", year: "numeric", month: "short",
       day: "numeric", hour: "2-digit", minute: "2-digit"
     };
 
-    var diff = this.state.now.getTime() - date.getTime();
+    const diff = this.state.now.getTime() - date.getTime();
     if(diff < MINUTE_MILLISECOND) return Math.floor(diff / SECOND_MILLISECOND) + "秒前"
     else if(diff < HOUR_MILLISECOND) return Math.floor(diff / MINUTE_MILLISECOND) + "分前"
     else if(diff < DAY_MILLISECOND) return Math.floor(diff / HOUR_MILLISECOND) + "時間前"
@@ -83,7 +85,7 @@ export default class TimeLine extends Component {
                     id="select-currency"
                     select
                     label="検索タイプ"
-                    value={this.state.feed.feedType ? this.state.feed.feedType : "search"}
+                    value={this.state.feed.feedType}
                     onChange={(e)=>this.setState({feed:{...this.state.feed, feedType: e.target.value}})}
                     helperText=""
                   >
@@ -95,7 +97,8 @@ export default class TimeLine extends Component {
                   </TextField>
                   </div><div style={styles.fieldWrapper}>
                   <TextField
-                    label="検索文字列"
+                    label="クエリ"
+                    placeholder={helpEachType[this.state.feed.feedType]}
                     helperText=""
                     value={this.state.feed.query}
                     onChange={(e)=>this.setState({feed:{...this.state.feed, query: e.target.value}})}
@@ -224,7 +227,7 @@ const styles = {
     lineHeight: '18px',
     fontSize: 13,
     display: '-webkit-box',
-    '-webkit-box-orient': 'vertical',
-    '-webkit-line-clamp': '2'
+    'WebkitBoxOrient': 'vertical',
+    'WebkitLineClamp': '2'
   }
 }
