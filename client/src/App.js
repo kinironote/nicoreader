@@ -7,7 +7,7 @@ import { withCookies } from 'react-cookie';
 class App extends Component {
   constructor(props){
     super(props);
-    this.apiURL = 'http://'+(window.location.hostname)+':3000/api'
+    this.apiURL = 'api'
     this.state = {
       username: null,
       token: this.props.cookies.get('token') || null,
@@ -91,7 +91,7 @@ class App extends Component {
       this.setState({token: response.data.id, userid: response.data.userId, username: username})
       this.props.cookies.set('token', this.state.token);
       this.props.cookies.set('userid', this.state.userid);
-      this.fetchContents();
+      this.fetchAllContents();
       return {status:'success'}
     }catch(error){
       return {status:'error', message:'ユーザー名またはパスワードが違います'}
@@ -237,7 +237,7 @@ class App extends Component {
     if(this.state.token == null){
       await this.guestLogin();
     }
-    this.fetchContents();
+    this.fetchAllContents();
   }
   render() {
     console.log(this.props.cookies.cookies);

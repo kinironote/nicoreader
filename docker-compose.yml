@@ -9,25 +9,25 @@ services:
     volumes:
       - ./db:/var/lib/postgresql/data
   client:
-    image: "node:9"
+    image: "node:10"
     working_dir: /home/node/app
     environment:
       - NODE_ENV=production
     volumes:
       - ./client/:/home/node/app
     ports:
-      - "80:3000"
-    command: bash -c "yarn && yarn start"
+      - "8002:3000"
+    command: bash -c "npm i && npm start"
   server:
     build: ./server/
-    user: "node"
+    user: "node:10"
     working_dir: /home/node/app
     environment:
       - NODE_ENV=production
     volumes:
       - ./server/:/home/node/app
     ports:
-      - "3000:3000"
-    command: bash -c "yarn && nodemon ./ --config ./nodeamon.json"
+      - "8003:3000"
+    command: bash -c "npm i && nodemon ./ --config ./nodeamon.json"
     depends_on:
       - db
