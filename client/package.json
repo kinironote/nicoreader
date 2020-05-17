@@ -12,7 +12,7 @@
     "helmet": "^3.21.0",
     "libxmljs2": "^0.21.0",
     "material-ui": "^0.20.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.14.1",
     "onsenui": "^2.10.2",
     "react": "^16.0.0",
     "react-cookie": "^2.2.0",
@@ -21,11 +21,11 @@
     "react-onsenui": "^1.11.1",
     "react-popout": "^1.0.1",
     "react-popup": "^0.9.3",
-    "react-scripts": "^3.1.1",
+    "react-scripts": "^3.4.1",
     "reactjs-popup": "^1.1.1",
     "request": "^2.87.0",
     "serve-favicon": "^2.0.1",
-    "strong-error-handler": "^2.0.0",
+    "strong-error-handler": "^3.4.0",
     "typescript": "^3.6.2"
   },
   "devDependencies": {
