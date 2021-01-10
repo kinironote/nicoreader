@@ -18,6 +18,7 @@ services:
     ports:
       - "8002:3000"
     command: bash -c "npm i && npm start"
+    stdin_open: true
   server:
     build: ./server/
     user: "node:10"

@@ -6,7 +6,11 @@
     },
     "1426|react-modal-login>uglifyjs-webpack-plugin>serialize-javascript": {
       "decision": "ignore",
-      "madeAt": 1589710752994
+      "madeAt": 1610248350948
+    },
+    "1548|react-modal-login>uglifyjs-webpack-plugin>serialize-javascript": {
+      "decision": "ignore",
+      "madeAt": 1610248350948
     }
   },
   "rules": {},

@@ -21,9 +21,9 @@
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^6.4.0",
     "loopback-connector-postgresql": "^3.4.0",
-    "loopback-datasource-juggler": "^2.39.0",
+    "loopback-datasource-juggler": "^3.32.0",
     "strong-error-handler": "^2.0.0",
-    "swagger-ui": "^3.23.11"
+    "swagger-ui": "^3.39.0"
   },
   "devDependencies": {
     "eslint-config-loopback": "^8.0.0"
