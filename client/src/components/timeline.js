@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
+import InfiniteScroll from 'react-infinite-scroller';
+import {
+  SortableHandle,
+} from 'react-sortable-hoc';
 
 const currencies = [
   {
@@ -64,13 +68,16 @@ export default class TimeLine extends Component {
   }
 
   render() {
+    const DragHandle = SortableHandle(() => (
+      <div>
+                <span style={styles.feedName}>{this.props.feed.feedName}</span>
+                <span style={styles.settingIcon} onClick={()=>this.setState({openSetting: !this.state.openSetting})}>>></span>
+                </div>
+    )); // This can be any component you want
     return (
       <div style={styles.body}>
           <div style={styles.timelineHeader}>
-              <div style={styles.timelineHeaderHeader}>
-                <span style={styles.feedName}>{this.props.feed.feedName}</span>
-                <span style={styles.settingIcon} onClick={()=>this.setState({openSetting: !this.state.openSetting})}>>></span>
-              </div>
+              <DragHandle style={styles.timelineHeaderHeader}/>
               {this.state.openSetting &&
                 <form style={styles.timelineHeaderSettings} onSubmit={async () => {await this.setState({feed:{...this.state.feed, feedName: this.state.feed.feedName || this.state.feed.query}}); this.props.updateFeed(this.state.feed)}}>
                   {this.state.feed.feedName != null &&
@@ -119,16 +126,24 @@ export default class TimeLine extends Component {
           </div>
           {('contents' in this.props.feed) && ('data' in this.props.feed.contents) &&
             <div style={this.state.openSetting ? styles.contentListWhenOpenSetting : styles.contentList}>
+              <InfiniteScroll
+                pageStart={0}
+                loadMore={() => this.props.loadNewContents(this.props.feed, this.props.id)}
+                hasMore={true}
+                loader={<div key={-1} className="loader">Loading ...</div>}
+                useWindow={false}
+              >
               {this.props.feed.contents.data.map((c, i)=>(
                 <div style={styles.content} key={i}>
-                    <a href={'http://www.nicovideo.jp/watch/'+c.contentId} target='_blank' style={{textDecoration: 'none'}}>
-                      <img style={styles.thumbnail} src={c.thumbnailUrl} alt="サムネイル"/>
+                    <div href={'https://www.nicovideo.jp/watch/'+c.contentId} target='_blank' style={{textDecoration: 'none'}}>
+                      <img style={styles.thumbnail} src={c.thumbnailUrl} alt="サムネイル" onClick={()=>this.props.openPopupMovie(c.contentId)}/>
                       <span style={styles.contentTitle}>{c.title}</span>
-                    </a>
+                    </div>
                     <span style={styles.viewCount}>{c.viewCounter}</span>
                     <span style={styles.date}>{this.calcDateDiff(new Date(c.startTime.replace(/[年月日]/g,"/").replace(/：/g,":")))}</span>
                 </div>
               ))}
+              </InfiniteScroll>
             </div>
           }
       </div>
@@ -155,11 +170,12 @@ const styles = {
   },
   timelineHeaderHeader:{
     height: 34,
-    position: 'relative',
+    flexWrap: 'nowrap',
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   feedName:{
     height: '100%',
-    position: 'absolute',
     display: 'flex',
     alignItems: 'center',
     paddingLeft: 8,
@@ -171,7 +187,6 @@ const styles = {
     height: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
     paddingRight: 10,
     color: '#3b3b3b',
     fontSize: 15,

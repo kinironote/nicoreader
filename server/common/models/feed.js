@@ -9,17 +9,18 @@ module.exports = function(Feed) {
     context.args.data.ownerId = context.req.accessToken.userId;
     next();
   });
-  Feed.requestFeed = function(id, res) {
+  Feed.requestFeed = function(id, offset, res) {
+    offset = offset || 0;
     Feed.findById(id, function(err, instance) {
       if (instance.feedType === 'user' || instance.feedType === 'mylist') {
         var feed = function() {
           var query = instance.query;
           switch (instance.feedType) {
             case 'user':
-              return 'http://www.nicovideo.jp/user/' + query + '/video?rss=2.0';
+              return 'https://www.nicovideo.jp/user/' + query + '/video?rss=2.0&page=' + offset;
               break;
             case 'mylist':
-              return 'http://www.nicovideo.jp/mylist/' + query + '/video?rss=2.0';
+              return 'https://www.nicovideo.jp/mylist/' + query + '/video?rss=2.0&page=' + offset;
               break;
             default:
               break;
@@ -47,7 +48,7 @@ module.exports = function(Feed) {
               title: item.title,
               thumbnailUrl: discription.match(/src=\"(.*?)\"/)[1],
               viewCounter: '',
-              contentId: item.link.replace('http://www.nicovideo.jp/watch/', ''),
+              contentId: item.link.replace('https://www.nicovideo.jp/watch/', ''),
               startTime: discription.match(/<strong class=\"nico-info-date\">(.*?)<\/strong>/)[1],
             };
             items.push(response);
@@ -68,7 +69,7 @@ module.exports = function(Feed) {
                     '&targets=title' +
                     '&fields=title,thumbnailUrl,viewCounter,contentId,startTime' +
                     '&_sort=-startTime' +
-                    '&_offset=0' +
+                    '&_offset=' + offset*20 +
                     '&_limit=20' +
                     '&_context=nicoreader';
               break;
@@ -78,7 +79,7 @@ module.exports = function(Feed) {
                     '&targets=tags' +
                     '&fields=title,thumbnailUrl,viewCounter,contentId,startTime' +
                     '&_sort=-startTime' +
-                    '&_offset=0' +
+                    '&_offset=' + offset*20 +
                     '&_limit=20' +
                     '&_context=nicoreader';
               break;
@@ -86,6 +87,7 @@ module.exports = function(Feed) {
               break;
           }
         }();
+        console.log('api call:', apiCall);
         request(apiCall, function(error, response, body) {
           console.log('error:', error); // Print the error if one occurred
           console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
@@ -96,16 +98,43 @@ module.exports = function(Feed) {
       }
     });
   };
+  Feed.moveFeed = function(fromTimelineId, toTimelineId, ctx, res){
+    Feed.getApp((err, app) => {
+      const ds = app.dataSources.db;
+      const ownerId = ctx.req.accessToken.userId;
+
+      // Move fromFeed to toFeed + 1
+      ds.connector.execute(
+        "update feeds set timelineId = $1 + 1 where ownerId = $2 and timelineId = $3",
+        [toTimelineId, ownerId, fromTimelineId],
+        (err, data) => {err && console.log(err)});
+
+      // Shift feed between to..from
+      ds.connector.execute(
+        "update feeds set timelineId += 1 where ownerId = $1 and timelineId > $2 and timelineId < $3",
+        [ownerId, toTimelineId, fromTimelineId],
+        (err, data) => {err && console.log(err)});
+    })
+  }
   Feed.remoteMethod(
       'requestFeed', {
         accepts: [
             {arg: 'id', type: 'number', required: true},
+            {arg: 'offset', type: 'number', required: false},
+            {arg: 'ctx', type: 'object', http: { source: 'context' } }
         ],
         http: {path: '/:id/request-feed', verb: 'get'},
         returns: {
           arg: 'response',
           type: 'string',
         },
-      }
+      },
+      'moveFeed', {
+        accepts: [
+            {arg: 'fromTimelineId', type: 'number', required: true},
+            {arg: 'toTimelineId', type: 'number', required: true}
+        ],
+        http: {path: '/moveFeed', verb: 'put'},
+      },
   );
 };
