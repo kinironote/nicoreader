@@ -1,0 +1,6 @@
+# Prisma Migrate lockfile v1
+
+20210111234439-initial-migration
+20210112080018-add-feed-schema
+20210112081513-link-feed-and-user
+20210113005816-add-index

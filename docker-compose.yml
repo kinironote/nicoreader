@@ -1,34 +1,13 @@
-version: "3"
+version: "3.7"
 
 services:
   db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: ""
+    image: postgres:latest
+    container_name: nicoreader-db
     volumes:
-      - ./db:/var/lib/postgresql/data
-  client:
-    image: "node:10"
-    working_dir: /home/node/app
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ./client/:/home/node/app
+      - data:/var/lib/postgresql/data
+    env_file: ./.env.local
     ports:
-      - "8002:3000"
-    command: bash -c "npm i && npm start"
-    stdin_open: true
-  server:
-    build: ./server/
-    user: "node:10"
-    working_dir: /home/node/app
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ./server/:/home/node/app
-    ports:
-      - "8003:3000"
-    command: bash -c "npm i && nodemon ./ --config ./nodeamon.json"
-    depends_on:
-      - db
+      - "58278:5432"
+volumes:
+  data:
