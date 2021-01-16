@@ -1,7 +1,6 @@
 import { AppProps, ErrorComponent, useRouter, AuthenticationError, AuthorizationError } from "blitz"
 import { ErrorBoundary, FallbackProps } from "react-error-boundary"
 import { queryCache } from "react-query"
-import LoginForm from "app/auth/components/LoginForm"
 import "../styles.css"
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -25,7 +24,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
 function RootErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   if (error instanceof AuthenticationError) {
-    return <LoginForm onSuccess={resetErrorBoundary} />
+    return (
+      <ErrorComponent
+        statusCode={(error as any).statusCode}
+        title="Sorry, you are not authenticated to access this"
+      />
+    )
   } else if (error instanceof AuthorizationError) {
     return (
       <ErrorComponent
