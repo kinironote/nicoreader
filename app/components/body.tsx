@@ -8,6 +8,7 @@ import { UpdateFeedInput } from "app/feeds/mutations/updateFeed"
 import { DeleteFeedInput } from "app/feeds/mutations/deleteFeed"
 import Feeder from "app/components/feeder"
 import { createStyle } from "app/utils"
+import { memo } from "react"
 
 type BodyPropType = {
   feeds: Feed[]
@@ -76,7 +77,7 @@ const Body = ({ feeds, createFeed, moveFeed }: BodyPropType) => {
   )
 }
 
-export default Body
+export default memo(Body)
 
 const styles = createStyle({
   body: {

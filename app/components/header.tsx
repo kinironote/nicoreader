@@ -1,6 +1,6 @@
 import { Callback } from "app/types"
 import { LoginInputType, SignupInputType } from "app/auth/validations"
-import { useState } from "react"
+import { memo, useState } from "react"
 import { Button, TextField } from "@material-ui/core"
 import { createStyle } from "app/utils"
 
@@ -166,7 +166,7 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
   )
 }
 
-export default Header
+export default memo(Header)
 
 const styles = createStyle({
   header: {

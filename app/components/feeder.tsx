@@ -37,97 +37,94 @@ type FeedHeaderPropType = {
   refetch: () => void
 }
 
-const FeedHeader = ({
-  feed: _feed,
-  settingOpened,
-  setSettingOpened,
-  refetch,
-}: FeedHeaderPropType) => {
-  const [formFeed, setFormFeed] = useState(_feed)
-  const { updateFeed, deleteFeed } = useContext(NicoReaderContext)
+const FeedHeader = memo(
+  ({ feed: _feed, settingOpened, setSettingOpened, refetch }: FeedHeaderPropType) => {
+    const [formFeed, setFormFeed] = useState(_feed)
+    const { updateFeed, deleteFeed } = useContext(NicoReaderContext)
 
-  const toggleSetting = () => {
-    setSettingOpened(!settingOpened)
-  }
+    const toggleSetting = () => {
+      setSettingOpened(!settingOpened)
+    }
 
-  return (
-    <div style={styles.timelineHeader}>
-      <div style={styles.timelineHeaderHeader}>
-        <DragHandle feed={_feed} />
-        <div
-          role="button"
-          tabIndex={0}
-          style={styles.settingIcon}
-          onClick={(e) => {
-            e.preventDefault()
-            toggleSetting()
-          }}
-          onKeyDown={(e) => {
-            e.preventDefault()
-            toggleSetting()
-          }}
-        >
-          {">>"}
+    return (
+      <div style={styles.timelineHeader}>
+        <div style={styles.timelineHeaderHeader}>
+          <DragHandle feed={_feed} />
+          <div
+            role="button"
+            tabIndex={0}
+            style={styles.settingIcon}
+            onClick={(e) => {
+              e.preventDefault()
+              toggleSetting()
+            }}
+            onKeyDown={(e) => {
+              e.preventDefault()
+              toggleSetting()
+            }}
+          >
+            {">>"}
+          </div>
         </div>
-      </div>
-      {settingOpened && (
-        <form
-          style={styles.timelineHeaderSettings}
-          onSubmit={async (e) => {
-            e.preventDefault()
-            await updateFeed(formFeed)
-            refetch()
-          }}
-        >
-          <div style={styles.fieldWrapper}>
-            <TextField
-              label="タイトル"
-              defaultValue=""
-              style={styles.textField}
-              helperText=""
-              value={formFeed.name}
-              onChange={(e) => setFormFeed({ ...formFeed, name: e.target.value })}
-            />
-          </div>
+        {settingOpened && (
+          <form
+            style={styles.timelineHeaderSettings}
+            onSubmit={async (e) => {
+              e.preventDefault()
+              await updateFeed(formFeed)
+              refetch()
+            }}
+          >
+            <div style={styles.fieldWrapper}>
+              <TextField
+                label="タイトル"
+                defaultValue=""
+                style={styles.textField}
+                helperText=""
+                value={formFeed.name}
+                onChange={(e) => setFormFeed({ ...formFeed, name: e.target.value })}
+              />
+            </div>
 
-          <div style={styles.fieldWrapper}>
-            <TextField
-              id="select-currency"
-              select
-              label="検索タイプ"
-              value={formFeed.type}
-              onChange={(e) => setFormFeed({ ...formFeed, type: e.target.value as FeedType })}
-              helperText=""
-            >
-              {FEED_TYPE_LIST.map((feedType) => (
-                <MenuItem key={feedType} value={feedType}>
-                  {feedTypeLabel[feedType]}
-                </MenuItem>
-              ))}
-            </TextField>
-          </div>
-          <div style={styles.fieldWrapper}>
-            <TextField
-              label="クエリ"
-              placeholder={feedQueryHelp[formFeed.type]}
-              defaultValue=""
-              style={styles.textField}
-              helperText=""
-              value={formFeed.query}
-              onChange={(e) => setFormFeed({ ...formFeed, query: e.target.value })}
-            />
-          </div>
-          <Button variant="contained" style={{ marginRight: 5 }} color="primary" type="submit">
-            更新
-          </Button>
-          <Button variant="contained" onClick={() => deleteFeed(formFeed)}>
-            削除
-          </Button>
-        </form>
-      )}
-    </div>
-  )
-}
+            <div style={styles.fieldWrapper}>
+              <TextField
+                id="select-currency"
+                select
+                label="検索タイプ"
+                value={formFeed.type}
+                onChange={(e) => setFormFeed({ ...formFeed, type: e.target.value as FeedType })}
+                helperText=""
+              >
+                {FEED_TYPE_LIST.map((feedType) => (
+                  <MenuItem key={feedType} value={feedType}>
+                    {feedTypeLabel[feedType]}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </div>
+            <div style={styles.fieldWrapper}>
+              <TextField
+                label="クエリ"
+                placeholder={feedQueryHelp[formFeed.type]}
+                defaultValue=""
+                style={styles.textField}
+                helperText=""
+                value={formFeed.query}
+                onChange={(e) => setFormFeed({ ...formFeed, query: e.target.value })}
+              />
+            </div>
+            <Button variant="contained" style={{ marginRight: 5 }} color="primary" type="submit">
+              更新
+            </Button>
+            <Button variant="contained" onClick={() => deleteFeed(formFeed)}>
+              削除
+            </Button>
+          </form>
+        )}
+      </div>
+    )
+  }
+)
 
 export type FeederPropType = {
   feed: Feed

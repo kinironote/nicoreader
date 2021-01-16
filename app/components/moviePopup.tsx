@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react"
+import React, { CSSProperties, memo } from "react"
 import Popup from "reactjs-popup"
 import { Content } from "app/types"
 
@@ -44,7 +44,7 @@ const MoviePopup = ({ isOpened, contentId, onClose }: MoviePopupPropType) => (
   </Popup>
 )
 
-export default MoviePopup
+export default memo(MoviePopup)
 
 const styles: Record<string, CSSProperties> = {
   moviePopup: {
