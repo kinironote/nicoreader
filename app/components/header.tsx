@@ -106,6 +106,7 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
                 }}
               />
               <br />
+              <br />
               <Button type="submit">ログイン</Button>
               <Button onClick={() => setOnLogin(false)}>閉じる</Button>
             </form>
