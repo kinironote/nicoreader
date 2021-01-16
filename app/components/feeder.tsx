@@ -1,6 +1,6 @@
-import { Callback, Content, Feed } from "app/types"
+import { Feed } from "app/types"
 import { FeedType } from "@prisma/client"
-import React, { CSSProperties, memo, Suspense, useContext, useEffect, useState } from "react"
+import React, { memo, Suspense, useContext, useState } from "react"
 import { Button, MenuItem, TextField } from "@material-ui/core"
 import { SortableHandle } from "react-sortable-hoc"
 import { createStyle, FEED_TYPE_LIST } from "app/utils"

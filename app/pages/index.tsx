@@ -1,17 +1,9 @@
-import { BlitzPage, useMutation, useQuery, useSession } from "blitz"
+import { BlitzPage, useMutation, useQuery } from "blitz"
 import Layout from "app/layouts/Layout"
 import { useCurrentUser } from "app/hooks/useCurrentUser"
-import React, {
-  CSSProperties,
-  Suspense,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react"
+import React, { CSSProperties, Suspense, useCallback, useEffect, useMemo, useState } from "react"
 import Popup from "reactjs-popup"
-import { Callback, Content, Feed, MoviePopup } from "app/types"
+import { Callback, Feed, MoviePopup } from "app/types"
 import loginMutation from "app/auth/mutations/login"
 import logoutMutation from "app/auth/mutations/logout"
 import signupMutation from "app/auth/mutations/signup"
@@ -24,7 +16,6 @@ import createFeedMutation from "app/feeds/mutations/createFeed"
 import moveFeedMutation from "app/feeds/mutations/moveFeed"
 import updateFeedMutation from "app/feeds/mutations/updateFeed"
 import deleteFeedMutation from "app/feeds/mutations/deleteFeed"
-import { CircularProgress } from "@material-ui/core"
 import Progress from "app/components/progress"
 import { CreateFeedInput } from "app/feeds/mutations/createFeed"
 import { MoveFeedInput } from "app/feeds/mutations/moveFeed"
@@ -49,22 +40,22 @@ const Home: BlitzPage = () => {
     suspense: false,
   })
 
-  const [login, loginOps] = useMutation(loginMutation, {
+  const [login] = useMutation(loginMutation, {
     onSuccess: () => {
       feedsOps.refetch()
     },
   })
-  const [signup, signupOps] = useMutation(signupMutation, {
+  const [signup] = useMutation(signupMutation, {
     onSuccess: () => {
       feedsOps.refetch()
     },
   })
-  const [logout, logoutOps] = useMutation(logoutMutation, {
+  const [logout] = useMutation(logoutMutation, {
     onSuccess: () => {
       feedsOps.clear()
     },
   })
-  const [spawnGuest, spawnGuestOps] = useMutation(spawnGuestMutation)
+  const [spawnGuest] = useMutation(spawnGuestMutation)
 
   const [createFeed] = useMutation(createFeedMutation, {
     onSuccess: () => {
