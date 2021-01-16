@@ -5,44 +5,45 @@ import { Content } from "app/types"
 type MoviePopupPropType = {
   isOpened: boolean
   contentId?: Content["id"]
-  onClose?: () => any
+  onClose?: () => void
 }
 
-const MoviePopup = ({ isOpened, contentId, onClose }: MoviePopupPropType) => (
-  <Popup
-    modal
-    closeOnDocumentClick
-    open={isOpened}
-    onClose={onClose}
-    contentStyle={{
-      ...styles.moviePopup,
-      ...(() => {
-        const ratio = 0.7
-        if (window.innerWidth < window.innerHeight) {
-          return {
-            width: window.innerWidth * ratio,
-            height: window.innerWidth * ratio * (130 / 230),
+const MoviePopup = ({ isOpened, contentId, onClose }: MoviePopupPropType) => {
+  if (contentId == null) throw new Error("`MoviePopup` is opened but `contentId` is none.")
+  return (
+    <Popup
+      modal
+      closeOnDocumentClick
+      open={isOpened}
+      onClose={onClose}
+      contentStyle={{
+        ...styles.moviePopup,
+        ...(() => {
+          const ratio = 0.7
+          if (window.innerWidth < window.innerHeight) {
+            return {
+              width: window.innerWidth * ratio,
+              height: window.innerWidth * ratio * (130 / 230),
+            }
+          } else {
+            return {
+              width: window.innerHeight * ratio * (230 / 130),
+              height: window.innerHeight * ratio,
+            }
           }
-        } else {
-          return {
-            width: window.innerHeight * ratio * (230 / 130),
-            height: window.innerHeight * ratio,
-          }
-        }
-      })(),
-    }}
-  >
-    <>
+        })(),
+      }}
+    >
       <iframe
-        src={"https://embed.nicovideo.jp/watch/" + contentId + "?jsapi=1"}
+        src={`https://embed.nicovideo.jp/watch/${contentId}?jsapi=1`}
         title="movie"
         frameBorder="0"
         allowFullScreen
         style={styles.movie}
       ></iframe>
-    </>
-  </Popup>
-)
+    </Popup>
+  )
+}
 
 export default memo(MoviePopup)
 

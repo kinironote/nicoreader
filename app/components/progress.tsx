@@ -1,6 +1,6 @@
 import { CircularProgress } from "@material-ui/core"
 
-const Progress = () => (
+const Progress = (): JSX.Element => (
   <div
     style={{
       display: "flex",

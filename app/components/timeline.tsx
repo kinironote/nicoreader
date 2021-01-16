@@ -7,7 +7,7 @@ import { createStyle } from "app/utils"
 
 export type TimelinePropType = {
   contentsSequence: { data: Content[] }[]
-  fetchMoreContents: (..._: any) => any
+  fetchMoreContents: () => void
 }
 
 const calcDateDiff = (now: Date, date: Date) => {
@@ -28,9 +28,9 @@ const calcDateDiff = (now: Date, date: Date) => {
   }
 
   const diff = now.getTime() - date.getTime()
-  if (diff < MINUTE_MILLISECOND) return Math.floor(diff / SECOND_MILLISECOND) + "秒前"
-  else if (diff < HOUR_MILLISECOND) return Math.floor(diff / MINUTE_MILLISECOND) + "分前"
-  else if (diff < DAY_MILLISECOND) return Math.floor(diff / HOUR_MILLISECOND) + "時間前"
+  if (diff < MINUTE_MILLISECOND) return `${Math.floor(diff / SECOND_MILLISECOND)}秒前`
+  else if (diff < HOUR_MILLISECOND) return `${Math.floor(diff / MINUTE_MILLISECOND)}分前`
+  else if (diff < DAY_MILLISECOND) return `${Math.floor(diff / HOUR_MILLISECOND)}時間前`
   else return date.toLocaleTimeString("ja-JP", options)
 }
 

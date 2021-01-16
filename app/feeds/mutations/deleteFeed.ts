@@ -5,7 +5,7 @@ import { guard } from "../util"
 
 export type DeleteFeedInput = Pick<Feed, "id">
 
-export default async function deleteFeed({ id }: DeleteFeedInput, ctx: Ctx) {
+export default async function deleteFeed({ id }: DeleteFeedInput, ctx: Ctx): Promise<void> {
   ctx.session.authorize()
   await guard(id, ctx)
 

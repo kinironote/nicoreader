@@ -10,7 +10,13 @@ export type FetchFeedContentsInput = {
   offset: number
 }
 
-export default async function fetchFeedContents({ id, offset }: FetchFeedContentsInput, ctx: Ctx) {
+export default async function fetchFeedContents(
+  { id, offset }: FetchFeedContentsInput,
+  ctx: Ctx
+): Promise<{
+  data: Content[]
+  nextOffset: number
+}> {
   ctx.session.authorize()
   const feed = await guard(id, ctx)
   if (!feed.query)
@@ -24,6 +30,16 @@ export default async function fetchFeedContents({ id, offset }: FetchFeedContent
   }
 }
 
+type NicoVideoSearchApiReturnType = {
+  data: {
+    contentId: string
+    title: string
+    viewCounter: string
+    thumbnailUrl: string
+    startTime: string
+  }[]
+}
+
 export async function _fetchContents(feed: Feed, offset: number): Promise<Content[]> {
   switch (feed.type) {
     case "User":
@@ -31,19 +47,13 @@ export async function _fetchContents(feed: Feed, offset: number): Promise<Conten
       const requestUrl = (() => {
         switch (feed.type) {
           case "User":
-            return (
-              "https://www.nicovideo.jp/user/" +
-              encodeURIComponent(feed.query) +
-              "/video?rss=2.0&page=" +
-              offset
-            )
+            return `https://www.nicovideo.jp/user/${encodeURIComponent(
+              feed.query
+            )}/video?rss=2.0&page=${offset}`
           case "Mylist":
-            return (
-              "https://www.nicovideo.jp/mylist/" +
-              encodeURIComponent(feed.query) +
-              "/video?rss=2.0&page=" +
-              offset
-            )
+            return `https://www.nicovideo.jp/mylist/${encodeURIComponent(
+              feed.query
+            )}/video?rss=2.0&page=${offset}`
         }
       })()
 
@@ -54,9 +64,10 @@ export async function _fetchContents(feed: Feed, offset: number): Promise<Conten
           return {
             id: item.link.replace("https://www.nicovideo.jp/watch/", ""),
             title: item.title,
-            thumbnailUrl: item.description.match(/src="(.*?)"/)![1],
+            thumbnailUrl: /src="(.*?)"/.exec(item.description)?.[1] ?? "",
             viewCounter: "",
-            startTime: item.description.match(/<strong class="nico-info-date">(.*?)<\/strong>/)![1],
+            startTime:
+              /<strong class="nico-info-date">(.*?)<\/strong>/.exec(item.description)?.[1] ?? "",
           }
         }
       )
@@ -66,36 +77,22 @@ export async function _fetchContents(feed: Feed, offset: number): Promise<Conten
       const apiCallUrl = (() => {
         switch (feed.type) {
           case "Search":
-            return (
-              "https://api.search.nicovideo.jp/api/v2/video/contents/search" +
-              "?q=" +
-              encodeURIComponent(feed.query) +
-              "&targets=title" +
-              "&fields=title,thumbnailUrl,viewCounter,contentId,startTime" +
-              "&_sort=-startTime" +
-              "&_offset=" +
-              offset * 20 +
-              "&_limit=20" +
-              "&_context=nicoreader"
-            )
+            return `https://api.search.nicovideo.jp/api/v2/video/contents/search?q=${encodeURIComponent(
+              feed.query
+            )}&targets=title&fields=title,thumbnailUrl,viewCounter,contentId,startTime&_sort=-startTime&_offset=${
+              offset * 20
+            }&_limit=20&_context=nicoreader`
           case "Tags":
-            return (
-              "https://api.search.nicovideo.jp/api/v2/video/contents/search" +
-              "?q=" +
-              encodeURIComponent(feed.query) +
-              "&targets=tags" +
-              "&fields=title,thumbnailUrl,viewCounter,contentId,startTime" +
-              "&_sort=-startTime" +
-              "&_offset=" +
-              offset * 20 +
-              "&_limit=20" +
-              "&_context=nicoreader"
-            )
+            return `https://api.search.nicovideo.jp/api/v2/video/contents/search?q=${encodeURIComponent(
+              feed.query
+            )}&targets=tags&fields=title,thumbnailUrl,viewCounter,contentId,startTime&_sort=-startTime&_offset=${
+              offset * 20
+            }&_limit=20&_context=nicoreader`
         }
       })()
-      const res = await axios.get(apiCallUrl)
+      const res = await axios.get<NicoVideoSearchApiReturnType>(apiCallUrl)
       return res.data["data"].map(
-        (data: any): Content => ({
+        (data): Content => ({
           id: data.contentId,
           title: data.title,
           viewCounter: data.viewCounter,

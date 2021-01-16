@@ -12,5 +12,7 @@ declare module "blitz" {
 }
 
 declare global {
+  // global require `var`ya
+  // eslint-disable-next-line no-var
   var prisma: PrismaClient
 }

@@ -1,5 +1,4 @@
 import { FeedType } from "@prisma/client"
-import { MutateFunction, PromiseReturnType } from "blitz"
 
 export type Feed = {
   id: number
@@ -17,11 +16,6 @@ export type Content = {
   startTime: string
 }
 
-type ServerMutateFunc = (variables: any, ctx?: any) => Promise<any>
-export type MutateFunc<T extends ServerMutateFunc> = MutateFunction<
-  PromiseReturnType<T>,
-  unknown,
-  Parameters<T>["0"]
->
-
-export type Callback<Input> = (variables: Input) => Promise<unknown>
+export type API<ApiType extends (...args: never) => unknown> = (
+  args: Parameters<ApiType>[0]
+) => ReturnType<ApiType>

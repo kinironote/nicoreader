@@ -2,7 +2,7 @@ import { BlitzPage, useMutation, useQuery } from "blitz"
 import Layout from "app/layouts/Layout"
 import { useCurrentUser } from "app/hooks/useCurrentUser"
 import React, { Suspense, useEffect, useMemo, useState } from "react"
-import { Callback, Content, Feed } from "app/types"
+import { API, Content, Feed } from "app/types"
 import loginMutation from "app/auth/mutations/login"
 import logoutMutation from "app/auth/mutations/logout"
 import signupMutation from "app/auth/mutations/signup"
@@ -15,10 +15,6 @@ import moveFeedMutation from "app/feeds/mutations/moveFeed"
 import updateFeedMutation from "app/feeds/mutations/updateFeed"
 import deleteFeedMutation from "app/feeds/mutations/deleteFeed"
 import Progress from "app/components/progress"
-import { CreateFeedInput } from "app/feeds/mutations/createFeed"
-import { MoveFeedInput } from "app/feeds/mutations/moveFeed"
-import { UpdateFeedInput } from "app/feeds/mutations/updateFeed"
-import { DeleteFeedInput } from "app/feeds/mutations/deleteFeed"
 import MoviePopup from "app/components/moviePopup"
 
 export type MoviePopupType = {
@@ -28,13 +24,15 @@ export type MoviePopupType = {
 
 export type NicoReaderContextType = {
   setMoviePopupState: React.Dispatch<React.SetStateAction<MoviePopupType>>
-  createFeed: Callback<CreateFeedInput>
-  deleteFeed: Callback<DeleteFeedInput>
-  updateFeed: Callback<UpdateFeedInput>
-  moveFeed: Callback<MoveFeedInput>
+  createFeed: API<typeof createFeedMutation>
+  deleteFeed: API<typeof deleteFeedMutation>
+  updateFeed: API<typeof updateFeedMutation>
+  moveFeed: API<typeof moveFeedMutation>
 }
 
-export const NicoReaderContext = React.createContext<NicoReaderContextType>({} as any)
+export const NicoReaderContext = React.createContext<NicoReaderContextType>(
+  {} as NicoReaderContextType
+)
 
 const Home: BlitzPage = () => {
   const currentUser = useCurrentUser()
@@ -45,13 +43,13 @@ const Home: BlitzPage = () => {
   })
 
   const [login] = useMutation(loginMutation, {
-    onSuccess: () => {
-      feedsOps.refetch()
+    onSuccess: async () => {
+      await feedsOps.refetch()
     },
   })
   const [signup] = useMutation(signupMutation, {
-    onSuccess: () => {
-      feedsOps.refetch()
+    onSuccess: async () => {
+      await feedsOps.refetch()
     },
   })
   const [logout] = useMutation(logoutMutation, {
@@ -62,24 +60,24 @@ const Home: BlitzPage = () => {
   const [spawnGuest] = useMutation(spawnGuestMutation)
 
   const [createFeed] = useMutation(createFeedMutation, {
-    onSuccess: () => {
-      feedsOps.refetch()
+    onSuccess: async () => {
+      await feedsOps.refetch()
     },
   })
   const [moveFeed] = useMutation(moveFeedMutation, {
-    onSuccess: () => {
-      feedsOps.refetch()
+    onSuccess: async () => {
+      await feedsOps.refetch()
     },
   })
   const [updateFeed] = useMutation(updateFeedMutation, {
-    onSuccess: () => {
-      feedsOps.refetch()
+    onSuccess: async () => {
+      await feedsOps.refetch()
     },
   })
   const [deleteFeed] = useMutation(deleteFeedMutation, {
-    onSuccess: () => {
+    onSuccess: async () => {
       console.log("success!")
-      feedsOps.refetch()
+      await feedsOps.refetch()
     },
   })
 
@@ -91,10 +89,12 @@ const Home: BlitzPage = () => {
     const autoLoginAsGuest = async () => {
       if (!currentUser) {
         const guest = await spawnGuest()
-        login({ email: guest.email, password: guest.password })
+        await login({ email: guest.email, password: guest.password })
       }
     }
-    autoLoginAsGuest()
+    autoLoginAsGuest().catch((e: Error) => {
+      throw new Error(`Auto login as guest is failed with message: ${e.message}`)
+    })
   }, [currentUser, spawnGuest, login])
 
   const nicoReaderContextValue = useMemo(
@@ -140,7 +140,7 @@ const Home: BlitzPage = () => {
 
 Home.getLayout = (page) => <Layout title="Home">{page}</Layout>
 
-export const Index = () => (
+export const Index = (): JSX.Element => (
   <Suspense fallback={<Progress />}>
     <Home />
   </Suspense>

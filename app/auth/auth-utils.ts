@@ -1,23 +1,29 @@
 import { AuthenticationError } from "blitz"
 import SecurePassword from "secure-password"
-import db from "db"
+import db, { User } from "db"
 
 const SP = () => new SecurePassword()
 
-export const hashPassword = async (password: string) => {
+export const hashPassword = async (password: string): Promise<string> => {
   const hashedBuffer = await SP().hash(Buffer.from(password))
   return hashedBuffer.toString("base64")
 }
-export const verifyPassword = async (hashedPassword: string, password: string) => {
+export const verifyPassword = async (
+  hashedPassword: string,
+  password: string
+): Promise<symbol | null> => {
   try {
     return await SP().verify(Buffer.from(password), Buffer.from(hashedPassword, "base64"))
   } catch (error) {
     console.error(error)
-    return false
+    return null
   }
 }
 
-export const authenticateUser = async (email: string, password: string) => {
+export const authenticateUser = async (
+  email: string,
+  password: string
+): Promise<Omit<User, "hashedPassword">> => {
   const user = await db.user.findFirst({ where: { email: email.toLowerCase() } })
 
   if (!user || !user.hashedPassword) throw new AuthenticationError()

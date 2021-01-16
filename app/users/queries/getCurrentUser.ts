@@ -1,7 +1,10 @@
 import { Ctx } from "blitz"
-import db from "db"
+import db, { User } from "db"
 
-export default async function getCurrentUser(_ = null, { session }: Ctx) {
+export default async function getCurrentUser(
+  _ = null,
+  { session }: Ctx
+): Promise<Pick<User, "id" | "name" | "email" | "role"> | null> {
   if (!session.userId) return null
 
   const user = await db.user.findFirst({

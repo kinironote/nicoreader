@@ -1,13 +1,16 @@
-import { Callback } from "app/types"
-import { LoginInputType, SignupInputType } from "app/auth/validations"
 import { memo, useState } from "react"
 import { Button, TextField } from "@material-ui/core"
 import { createStyle } from "app/utils"
+import { ZodError } from "zod"
+import login from "app/auth/mutations/login"
+import signup from "app/auth/mutations/signup"
+import logout from "app/auth/mutations/logout"
+import { API } from "app/types"
 
 type HeaderPropType = {
-  login: Callback<LoginInputType>
-  signup: Callback<SignupInputType>
-  logout: Callback<null>
+  login: API<typeof login>
+  signup: API<typeof signup>
+  logout: API<typeof logout>
   isLoggedIn: boolean
 }
 
@@ -74,9 +77,8 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
                   .then(() => {
                     setOnLogin(false)
                   })
-                  .catch((e) => {
-                    console.log(e)
-                    setPopupMessage(e.message)
+                  .catch((e: ZodError) => {
+                    setPopupMessage(e.errors.map((se) => se.message).join("、"))
                   })
                 e.preventDefault()
               }}
@@ -119,14 +121,14 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
             <h1>サインアップ</h1>
             {popupMessage != null && <span style={styles.popupMessage}>{popupMessage}</span>}
             <form
-              onSubmit={async (e) => {
+              onSubmit={(e) => {
                 signup(field)
                   .then(() => {
                     setOnSignup(false)
                   })
-                  .catch((e) => {
+                  .catch((e: ZodError) => {
                     console.log(e)
-                    setPopupMessage(e.message)
+                    setPopupMessage(e.errors.map((se) => se.message).join("、"))
                   })
                 e.preventDefault()
               }}

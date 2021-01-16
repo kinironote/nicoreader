@@ -1,21 +1,21 @@
-import { Callback, Feed } from "app/types"
+import { API, Feed } from "app/types"
 import { SortableContainer, SortableElement } from "react-sortable-hoc"
 import { Button } from "@material-ui/core"
-import { CreateFeedInput } from "app/feeds/mutations/createFeed"
 import { useCurrentUser } from "app/hooks/useCurrentUser"
-import { MoveFeedInput } from "app/feeds/mutations/moveFeed"
-import { UpdateFeedInput } from "app/feeds/mutations/updateFeed"
-import { DeleteFeedInput } from "app/feeds/mutations/deleteFeed"
 import Feeder from "app/components/feeder"
 import { createStyle } from "app/utils"
 import { memo } from "react"
+import createFeedMutation from "app/feeds/mutations/createFeed"
+import moveFeedMutation from "app/feeds/mutations/moveFeed"
+import updateFeedMutation from "app/feeds/mutations/updateFeed"
+import deleteFeedMutation from "app/feeds/mutations/deleteFeed"
 
 type BodyPropType = {
   feeds: Feed[]
-  createFeed: Callback<CreateFeedInput>
-  deleteFeed: Callback<DeleteFeedInput>
-  updateFeed: Callback<UpdateFeedInput>
-  moveFeed: Callback<MoveFeedInput>
+  createFeed: API<typeof createFeedMutation>
+  deleteFeed: API<typeof deleteFeedMutation>
+  updateFeed: API<typeof updateFeedMutation>
+  moveFeed: API<typeof moveFeedMutation>
 }
 
 const SortableTimeline = SortableElement(({ feed, index }: { feed: Feed; index: number }) => {

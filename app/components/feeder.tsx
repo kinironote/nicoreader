@@ -134,7 +134,9 @@ export type FeederPropType = {
 const Feeder = ({ feed, settingDefaultOpened }: FeederPropType) => {
   const [contentsSequence, contentsOps] = useInfiniteQuery(
     fetchFeedContents,
-    (offset = 0) => ({ id: feed.id, offset: offset }),
+    // Compiler don't infer
+    // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+    (offset: number = 0) => ({ id: feed.id, offset: offset }),
     {
       staleTime: 1000 * 60 * 30,
       getFetchMore: (prev) => prev.nextOffset,

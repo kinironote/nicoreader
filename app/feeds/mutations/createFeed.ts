@@ -4,7 +4,10 @@ import { Feed } from "app/types"
 
 export type CreateFeedInput = Pick<Feed, "name" | "type" | "query">
 
-export default async function createFeed({ name, type, query }: CreateFeedInput, ctx: Ctx) {
+export default async function createFeed(
+  { name, type, query }: CreateFeedInput,
+  ctx: Ctx
+): Promise<Feed> {
   ctx.session.authorize()
 
   const agg = await db.feed.aggregate({
@@ -22,5 +25,11 @@ export default async function createFeed({ name, type, query }: CreateFeedInput,
     },
   })
 
-  return feed
+  return {
+    id: feed.id,
+    name: feed.name || undefined,
+    type: feed.type,
+    query: feed.query,
+    zindex: feed.zindex,
+  }
 }

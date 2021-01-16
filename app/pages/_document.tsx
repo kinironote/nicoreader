@@ -7,7 +7,7 @@ class MyDocument extends Document {
   //   return {...initialProps}
   // }
 
-  render() {
+  render(): JSX.Element {
     return (
       <Html lang="ja" style={{ backgroundColor: "#1A1A1A" }}>
         <DocumentHead />

@@ -8,7 +8,7 @@ export type MoveFeedInput = {
   newZIndex: Feed["zindex"]
 }
 
-export default async function moveFeed({ id, newZIndex }: MoveFeedInput, ctx: Ctx) {
+export default async function moveFeed({ id, newZIndex }: MoveFeedInput, ctx: Ctx): Promise<void> {
   ctx.session.authorize()
   const feed = await guard(id, ctx)
 

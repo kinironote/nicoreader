@@ -3,7 +3,7 @@ import { ErrorBoundary, FallbackProps } from "react-error-boundary"
 import { queryCache } from "react-query"
 import "../styles.css"
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppProps): JSX.Element {
   const getLayout = Component.getLayout || ((page) => page)
   const router = useRouter()
 
@@ -26,21 +26,21 @@ function RootErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   if (error instanceof AuthenticationError) {
     return (
       <ErrorComponent
-        statusCode={(error as any).statusCode}
+        statusCode={error.statusCode}
         title="Sorry, you are not authenticated to access this"
       />
     )
   } else if (error instanceof AuthorizationError) {
     return (
       <ErrorComponent
-        statusCode={(error as any).statusCode}
+        statusCode={error.statusCode}
         title="Sorry, you are not authorized to access this"
       />
     )
   } else {
     return (
       <ErrorComponent
-        statusCode={(error as any)?.statusCode || 400}
+        statusCode={(error as { statusCode?: number })?.statusCode ?? 400}
         title={error?.message || error?.name}
       />
     )
