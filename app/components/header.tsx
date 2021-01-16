@@ -25,21 +25,39 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
       <div style={styles.buttonWrapper}>
         {!isLoggedIn && (
           <div style={styles.headerButton}>
-            <div style={styles.headerButtonText} onClick={() => setOnSignup(true)}>
+            <div
+              role="button"
+              tabIndex={0}
+              style={styles.headerButtonText}
+              onClick={() => setOnSignup(true)}
+              onKeyDown={() => setOnSignup(true)}
+            >
               Signup
             </div>
           </div>
         )}
         {!isLoggedIn && (
           <div style={styles.headerButton}>
-            <div style={styles.headerButtonText} onClick={(_) => setOnLogin(true)}>
+            <div
+              role="button"
+              tabIndex={0}
+              style={styles.headerButtonText}
+              onClick={() => setOnLogin(true)}
+              onKeyDown={() => setOnLogin(true)}
+            >
               Signin
             </div>
           </div>
         )}
         {isLoggedIn && (
           <div style={styles.headerButton}>
-            <div style={styles.headerButtonText} onClick={() => logout(null)}>
+            <div
+              role="button"
+              tabIndex={0}
+              style={styles.headerButtonText}
+              onClick={() => logout(null)}
+              onKeyDown={() => logout(null)}
+            >
               Logout
             </div>
           </div>

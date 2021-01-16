@@ -56,8 +56,14 @@ const Feeder = ({ feed: _feed, settingDefaultOpened }: FeederPropType) => {
         <div style={styles.timelineHeaderHeader}>
           <DragHandle />
           <div
+            role="button"
+            tabIndex={0}
             style={styles.settingIcon}
             onClick={(e) => {
+              e.preventDefault()
+              toggleSetting()
+            }}
+            onKeyDown={(e) => {
               e.preventDefault()
               toggleSetting()
             }}
