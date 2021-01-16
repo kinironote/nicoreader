@@ -35,17 +35,16 @@ const calcDateDiff = (now: Date, date: Date) => {
 }
 
 const ContentInner = ({ now, content }: { now: Date; content: Content }) => {
-  const { setMoviePopup } = useContext(NicoReaderContext)
+  const { setMoviePopupState } = useContext(NicoReaderContext)
 
   return (
     <div style={styles.content}>
       <button
         style={styles.thumbnailLink}
         onClick={() =>
-          setMoviePopup({
+          setMoviePopupState({
             opened: true,
             contentId: content.id,
-            loading: true,
           })
         }
       >

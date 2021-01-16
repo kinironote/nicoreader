@@ -1,15 +1,13 @@
 import { BlitzPage, useMutation, useQuery } from "blitz"
 import Layout from "app/layouts/Layout"
 import { useCurrentUser } from "app/hooks/useCurrentUser"
-import React, { CSSProperties, Suspense, useCallback, useEffect, useMemo, useState } from "react"
-import Popup from "reactjs-popup"
-import { Callback, Feed, MoviePopup } from "app/types"
+import React, { Suspense, useEffect, useMemo, useState } from "react"
+import { Callback, Content, Feed } from "app/types"
 import loginMutation from "app/auth/mutations/login"
 import logoutMutation from "app/auth/mutations/logout"
 import signupMutation from "app/auth/mutations/signup"
 import spawnGuestMutation from "app/auth/mutations/spawnGuest"
 import getFeeds from "app/feeds/queries/getFeeds"
-import useEventListener from "@use-it/event-listener"
 import Header from "app/components/header"
 import Body from "../components/body"
 import createFeedMutation from "app/feeds/mutations/createFeed"
@@ -21,9 +19,15 @@ import { CreateFeedInput } from "app/feeds/mutations/createFeed"
 import { MoveFeedInput } from "app/feeds/mutations/moveFeed"
 import { UpdateFeedInput } from "app/feeds/mutations/updateFeed"
 import { DeleteFeedInput } from "app/feeds/mutations/deleteFeed"
+import MoviePopup from "app/components/moviePopup"
+
+export type MoviePopupType = {
+  opened: boolean
+  contentId?: Content["id"]
+}
 
 export type NicoReaderContextType = {
-  setMoviePopup: React.Dispatch<React.SetStateAction<MoviePopup>>
+  setMoviePopupState: React.Dispatch<React.SetStateAction<MoviePopupType>>
   createFeed: Callback<CreateFeedInput>
   deleteFeed: Callback<DeleteFeedInput>
   updateFeed: Callback<UpdateFeedInput>
@@ -79,24 +83,9 @@ const Home: BlitzPage = () => {
     },
   })
 
-  const [moviePopup, setMoviePopup] = useState<MoviePopup>({
-    loading: false,
+  const [moviePopupState, setMoviePopupState] = useState<MoviePopupType>({
     opened: false,
   })
-  const catchMoveLoadCompleteMessage = (e: MessageEvent<any>) => {
-    if (e.origin === "https://embed.nicovideo.jp") {
-      if (e.data.eventName === "loadComplete") {
-        setMoviePopup((m) => {
-          return { ...m, loading: false }
-        })
-      }
-    }
-  }
-  useEventListener("message", catchMoveLoadCompleteMessage)
-
-  const closePopupMovie = useCallback(() => {
-    setMoviePopup((m) => ({ ...m, opened: false }))
-  }, [setMoviePopup])
 
   useEffect(() => {
     const autoLoginAsGuest = async () => {
@@ -110,13 +99,13 @@ const Home: BlitzPage = () => {
 
   const nicoReaderContextValue = useMemo(
     () => ({
-      setMoviePopup,
+      setMoviePopupState,
       createFeed,
       deleteFeed,
       updateFeed,
       moveFeed,
     }),
-    [setMoviePopup, createFeed, deleteFeed, updateFeed, moveFeed]
+    [setMoviePopupState, createFeed, deleteFeed, updateFeed, moveFeed]
   )
 
   return (feeds as Feed[] | null) == null ? (
@@ -140,39 +129,11 @@ const Home: BlitzPage = () => {
           deleteFeed={deleteFeed}
         />
       )}
-      <Popup
-        modal
-        closeOnDocumentClick
-        open={moviePopup.opened}
-        onClose={closePopupMovie}
-        contentStyle={{
-          ...styles.moviePopup,
-          ...(() => {
-            const ratio = 0.7
-            if (window.innerWidth < window.innerHeight) {
-              return {
-                width: window.innerWidth * ratio,
-                height: window.innerWidth * ratio * (130 / 230),
-              }
-            } else {
-              return {
-                width: window.innerHeight * ratio * (230 / 130),
-                height: window.innerHeight * ratio,
-              }
-            }
-          })(),
-        }}
-      >
-        <>
-          <iframe
-            src={"https://embed.nicovideo.jp/watch/" + moviePopup.contentId + "?jsapi=1"}
-            title="movie"
-            frameBorder="0"
-            allowFullScreen
-            style={styles.movie}
-          ></iframe>
-        </>
-      </Popup>
+      <MoviePopup
+        isOpened={moviePopupState.opened}
+        contentId={moviePopupState.contentId}
+        onClose={() => setMoviePopupState((m) => ({ ...m, opened: false }))}
+      />
     </NicoReaderContext.Provider>
   )
 }
@@ -186,14 +147,3 @@ export const Index = () => (
 )
 
 export default Index
-
-const styles: Record<string, CSSProperties> = {
-  moviePopup: {
-    border: "none",
-    padding: "none",
-  },
-  movie: {
-    height: "100%",
-    width: "100%",
-  },
-}

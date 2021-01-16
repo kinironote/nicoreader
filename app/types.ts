@@ -17,12 +17,6 @@ export type Content = {
   startTime: string
 }
 
-export type MoviePopup = {
-  contentId?: string
-  loading: boolean
-  opened: boolean
-}
-
 type ServerMutateFunc = (variables: any, ctx?: any) => Promise<any>
 export type MutateFunc<T extends ServerMutateFunc> = MutateFunction<
   PromiseReturnType<T>,

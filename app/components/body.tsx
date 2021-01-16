@@ -35,7 +35,20 @@ const SortableTimelineList = SortableContainer(({ feeds }: { feeds: Feed[] }) =>
   )
 })
 
-const Body = ({ feeds, createFeed, deleteFeed, updateFeed, moveFeed }: BodyPropType) => {
+const AddNewFeedButton = ({ addNewFeed }: { addNewFeed: () => void }) => {
+  return (
+    <div style={styles.timeline}>
+      <span>
+        <Button style={styles.addButton} onClick={() => addNewFeed()}>
+          {" "}
+          +{" "}
+        </Button>
+      </span>
+    </div>
+  )
+}
+
+const Body = ({ feeds, createFeed, moveFeed }: BodyPropType) => {
   const currentUser = useCurrentUser()
 
   return (
@@ -50,22 +63,14 @@ const Body = ({ feeds, createFeed, deleteFeed, updateFeed, moveFeed }: BodyPropT
         lockAxis="x"
       />
       {currentUser && (
-        <div style={styles.timeline}>
-          <span>
-            <Button
-              style={styles.addButton}
-              onClick={() =>
-                createFeed({
-                  type: "Tags",
-                  query: "",
-                })
-              }
-            >
-              {" "}
-              +{" "}
-            </Button>
-          </span>
-        </div>
+        <AddNewFeedButton
+          addNewFeed={() =>
+            createFeed({
+              type: "Tags",
+              query: "",
+            })
+          }
+        />
       )}
     </div>
   )
