@@ -1,6 +1,6 @@
 import { Callback } from "app/types"
 import { LoginInputType, SignupInputType } from "app/auth/validations"
-import { CSSProperties, useState } from "react"
+import { useState } from "react"
 import { Button, TextField } from "@material-ui/core"
 import { createStyle } from "app/utils"
 
@@ -53,16 +53,26 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
             <form
               onSubmit={(e) => {
                 login(field)
-                setOnLogin(false)
+                  .then(() => {
+                    setOnLogin(false)
+                  })
+                  .catch((e) => {
+                    console.log(e)
+                    setPopupMessage(e.message)
+                  })
                 e.preventDefault()
               }}
             >
               <TextField
                 type="text"
-                label="ユーザー名"
+                label="メールアドレス"
                 defaultValue=""
                 value={field.email}
                 onChange={(e) => setField((f) => ({ ...f, email: e.target.value }))}
+                required
+                inputProps={{
+                  autoComplete: "email",
+                }}
               />
               <br />
               <TextField
@@ -70,6 +80,12 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
                 label="パスワード"
                 value={field.password}
                 onChange={(e) => setField((f) => ({ ...f, password: e.target.value }))}
+                required
+                inputProps={{
+                  minLength: 10,
+                  maxLength: 100,
+                  autoComplete: "current-password",
+                }}
               />
               <br />
               <Button type="submit">ログイン</Button>
@@ -84,9 +100,15 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
             <h1>サインアップ</h1>
             {popupMessage != null && <span style={styles.popupMessage}>{popupMessage}</span>}
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 signup(field)
-                setOnSignup(false)
+                  .then(() => {
+                    setOnSignup(false)
+                  })
+                  .catch((e) => {
+                    console.log(e)
+                    setPopupMessage(e.message)
+                  })
                 e.preventDefault()
               }}
             >
@@ -96,6 +118,10 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
                 defaultValue=""
                 value={field.email}
                 onChange={(e) => setField((f) => ({ ...f, email: e.target.value }))}
+                required
+                inputProps={{
+                  autoComplete: "email",
+                }}
               />
               <br />
               <TextField
@@ -103,6 +129,12 @@ const Header = ({ login, signup, logout, isLoggedIn }: HeaderPropType) => {
                 label="パスワード"
                 value={field.password}
                 onChange={(e) => setField((f) => ({ ...f, password: e.target.value }))}
+                required
+                inputProps={{
+                  minLength: 10,
+                  maxLength: 100,
+                  autoComplete: "new-password",
+                }}
               />
               <br />
               <br />
