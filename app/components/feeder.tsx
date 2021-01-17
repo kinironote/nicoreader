@@ -140,6 +140,7 @@ const Feeder = ({ feed, settingDefaultOpened }: FeederPropType) => {
     {
       staleTime: 1000 * 60 * 30,
       getFetchMore: (prev) => prev.nextOffset,
+      suspense: false,
     }
   )
   const [settingOpened, setSettingOpened] = useState(settingDefaultOpened)
@@ -152,11 +153,13 @@ const Feeder = ({ feed, settingDefaultOpened }: FeederPropType) => {
         setSettingOpened={setSettingOpened}
         refetch={contentsOps.refetch}
       />
-      <Suspense fallback={<Progress />}>
+      {contentsOps.isLoading ? (
+        <Progress />
+      ) : (
         <div style={settingOpened ? styles.contentListWhenSettingOpened : styles.contentList}>
           <Timeline contentsSequence={contentsSequence} fetchMoreContents={contentsOps.fetchMore} />
         </div>
-      </Suspense>
+      )}
     </div>
   )
 }

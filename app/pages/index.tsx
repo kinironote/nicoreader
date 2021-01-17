@@ -108,9 +108,7 @@ const Home: BlitzPage = () => {
     [setMoviePopupState, createFeed, deleteFeed, updateFeed, moveFeed]
   )
 
-  return (feeds as Feed[] | null) == null ? (
-    <Progress />
-  ) : (
+  return (
     <NicoReaderContext.Provider value={nicoReaderContextValue}>
       <Header
         login={login}
@@ -118,17 +116,19 @@ const Home: BlitzPage = () => {
         logout={logout}
         isLoggedIn={currentUser != null && currentUser.role !== "guest"}
       />
-      {feedsOps.isLoading === true ? (
-        <Progress />
-      ) : (
-        <Body
-          feeds={feeds}
-          createFeed={createFeed}
-          updateFeed={updateFeed}
-          moveFeed={moveFeed}
-          deleteFeed={deleteFeed}
-        />
-      )}
+      <Suspense fallback={<Progress />}>
+        {(feeds as Feed[] | null) == null ? (
+          <Progress />
+        ) : (
+          <Body
+            feeds={feeds}
+            createFeed={createFeed}
+            updateFeed={updateFeed}
+            moveFeed={moveFeed}
+            deleteFeed={deleteFeed}
+          />
+        )}
+      </Suspense>
       <MoviePopup
         isOpened={moviePopupState.opened}
         contentId={moviePopupState.contentId}
