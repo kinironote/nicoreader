@@ -11,6 +11,8 @@ class MyDocument extends Document {
     return (
       <Html lang="ja" style={{ backgroundColor: "#1A1A1A" }}>
         <DocumentHead />
+        <title>Nico Reader</title>
+        <meta name="description" content="Nicovideo reader like TweetDeck"></meta>
         <body>
           <Main />
           <BlitzScript />
