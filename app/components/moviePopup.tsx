@@ -35,13 +35,15 @@ const MoviePopup = ({ isOpened, contentId, onClose }: MoviePopupPropType) => {
         })(),
       }}
     >
-      <iframe
-        src={`https://embed.nicovideo.jp/watch/${contentId}?jsapi=1`}
-        title="movie"
-        frameBorder="0"
-        allowFullScreen
-        style={styles.movie}
-      ></iframe>
+      {contentId != null && (
+        <iframe
+          src={`https://embed.nicovideo.jp/watch/${contentId}?jsapi=1`}
+          title="movie"
+          frameBorder="0"
+          allowFullScreen
+          style={styles.movie}
+        ></iframe>
+      )}
     </Popup>
   )
 }
