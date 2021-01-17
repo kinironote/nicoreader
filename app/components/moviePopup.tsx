@@ -9,7 +9,8 @@ type MoviePopupPropType = {
 }
 
 const MoviePopup = ({ isOpened, contentId, onClose }: MoviePopupPropType) => {
-  if (contentId == null) throw new Error("`MoviePopup` is opened but `contentId` is none.")
+  if (isOpened && contentId == null)
+    throw new Error("`MoviePopup` is opened but `contentId` is none.")
   return (
     <Popup
       modal
