@@ -1,4 +1,5 @@
-import { sessionMiddleware, simpleRolesIsAuthorized } from "@blitzjs/server"
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { sessionMiddleware, simpleRolesIsAuthorized } = require("@blitzjs/server")
 
 module.exports = {
   middleware: [
