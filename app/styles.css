@@ -10,3 +10,11 @@ body {
 #__next {
   height: 100%;
 }
+
+[role="button"] {
+  user-select: none;
+}
+
+[role="button"]:focus {
+  outline: 0;
+}
