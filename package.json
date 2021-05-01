@@ -42,7 +42,7 @@
     "@types/styled-components": "5.1.7",
     "@use-it/event-listener": "0.1.6",
     "axios": "0.21.1",
-    "blitz": "0.28.0",
+    "blitz": "~0.28.0",
     "crypto": "1.0.1",
     "feedparser-promised": "2.0.1",
     "final-form": "4.20.1",
