@@ -43,7 +43,8 @@ type NicoVideoSearchApiReturnType = {
 export async function _fetchContents(feed: Feed, offset: number): Promise<Content[]> {
   switch (feed.type) {
     case "User":
-    case "Mylist": {
+    case "Mylist":
+    case "Tags": {
       const requestUrl = (() => {
         switch (feed.type) {
           case "User":
@@ -54,6 +55,10 @@ export async function _fetchContents(feed: Feed, offset: number): Promise<Conten
             return `https://www.nicovideo.jp/mylist/${encodeURIComponent(
               feed.query
             )}/video?rss=2.0&page=${offset}`
+          case "Tags":
+            return `https://www.nicovideo.jp/tag/${encodeURIComponent(
+              feed.query
+            )}?sort=f&order=d&rss=2.0&page=${offset}`
         }
       })()
 
@@ -72,34 +77,8 @@ export async function _fetchContents(feed: Feed, offset: number): Promise<Conten
         }
       )
     }
-    case "Search":
-    case "Tags": {
-      const apiCallUrl = (() => {
-        switch (feed.type) {
-          case "Search":
-            return `https://api.search.nicovideo.jp/api/v2/video/contents/search?q=${encodeURIComponent(
-              feed.query
-            )}&targets=title&fields=title,thumbnailUrl,viewCounter,contentId,startTime&_sort=-startTime&_offset=${
-              offset * 20
-            }&_limit=20&_context=nicoreader`
-          case "Tags":
-            return `https://api.search.nicovideo.jp/api/v2/video/contents/search?q=${encodeURIComponent(
-              feed.query
-            )}&targets=tags&fields=title,thumbnailUrl,viewCounter,contentId,startTime&_sort=-startTime&_offset=${
-              offset * 20
-            }&_limit=20&_context=nicoreader`
-        }
-      })()
-      const res = await axios.get<NicoVideoSearchApiReturnType>(apiCallUrl)
-      return res.data["data"].map(
-        (data): Content => ({
-          id: data.contentId,
-          title: data.title,
-          viewCounter: data.viewCounter,
-          thumbnailUrl: data.thumbnailUrl,
-          startTime: data.startTime,
-        })
-      )
+    case "Search": {
+      return []
     }
   }
 }

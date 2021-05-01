@@ -11,14 +11,14 @@ import { useInfiniteQuery } from "blitz"
 import fetchFeedContents from "app/feeds/queries/fetchFeedContents"
 
 const feedTypeLabel: Record<FeedType, string> = {
-  Search: "文字列",
+  Search: "文字列（廃止）",
   Tags: "タグ",
   User: "ユーザーID",
   Mylist: "マイリストID",
 }
 
 const feedQueryHelp: Record<FeedType, string> = {
-  Search: "例：少年 or 少女",
+  Search: "APIサービスが終了しました。",
   Tags: "例：ゲーム or VOCAROID",
   Mylist: "マイリストのID",
   User: "ユーザーのID",
